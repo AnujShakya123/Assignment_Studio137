@@ -1,0 +1,40 @@
+const express = require('express');
+const mysql = require('mysql2');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware to parse JSON requests
+app.use(express.json());
+
+// Create a MySQL connection
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: '', // Replace with your MySQL username
+    password: '', // Replace with your MySQL password
+    database: 'bleat' // Use the database name from your SQL dump
+});
+
+// Connect to the database
+db.connect(err => {
+    if (err) {
+        console.error('Database connection failed:', err.stack);
+        return;
+    }
+    console.log('Connected to the database.');
+});
+
+// API endpoint to get all questions
+app.get('/api/questions', (req, res) => {
+    db.query('SELECT * FROM questions', (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(results);
+    });
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
